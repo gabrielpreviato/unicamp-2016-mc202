@@ -1,0 +1,30 @@
+push aa
+push bbb
+push cccc
+push ddddd
+push eeeeee
+push fffffff
+shift
+shift
+shift
+push gggggggg
+push hhhhhhhhh
+push iiiiiiiiii
+push jjjjjjjjjjj
+print-first
+shift
+print-first
+shift
+print-first
+shift
+print-first
+shift
+print-first
+print-last
+pop
+shift
+print-first
+print-last
+shift
+is-empty
+exit
