@@ -31,7 +31,12 @@ int main() {
                 tree_root = constructTree(tree_root, in_order_size, &pre_order_size, &pre_order_tree, in_order_tree,
                 j, in_order_size + 1, 1);
                 printTree(tree_root);
+                printf("\n");
                 //destructTree();
+                free(pre_order_tree);
+                free(in_order_tree);
+                pre_order_size = 0;
+                in_order_size = 0;
             }
             else {
                 printf("ERROR: Different sizes\n");
@@ -65,6 +70,7 @@ node_t* constructTree(node_t *node, int size, int *size_pre, char **pre_order, c
 
         node = malloc(sizeof(node_t));
         node->value = *pre_order[0];
+        printf("%c\n", node->value);
 
         char *new_pre = malloc(--(*size_pre));
         for (k = 0; k < *size_pre; k++) {
@@ -74,8 +80,14 @@ node_t* constructTree(node_t *node, int size, int *size_pre, char **pre_order, c
         free(*pre_order);
         *pre_order = new_pre;
 
-        node->left = constructTree(node->left, size, size_pre, pre_order, in_order, j, j_b, 0);
-        node->right = constructTree(node->left, size, size_pre, pre_order, in_order, j, j_b, 0);
+        if (*pre_order == NULL) {
+            node->left = NULL;
+            node->right = NULL;
+        }
+        else {
+            node->left = constructTree(node->left, size, size_pre, pre_order, in_order, j, j_b, 0);
+            node->right = constructTree(node->left, size, size_pre, pre_order, in_order, j, j_b, 0);
+        }
         return node;
     }
 
@@ -84,6 +96,7 @@ node_t* constructTree(node_t *node, int size, int *size_pre, char **pre_order, c
         if (in_order[l] == *pre_order[0]) {
             node = malloc(sizeof(node_t));
             node->value = *pre_order[0];
+            printf("%c\n", node->value);
 
             char *new_pre = malloc(--(*size_pre));
             for (k = 0; k < *size_pre; k++) {
@@ -93,16 +106,23 @@ node_t* constructTree(node_t *node, int size, int *size_pre, char **pre_order, c
             free(*pre_order);
             *pre_order = new_pre;
 
-            node->left = constructTree(node->left, size, size_pre, pre_order, in_order, l, j, 0);
-            node->right = constructTree(node->right, size, size_pre, pre_order, in_order, l, j, 0);
+            if (*pre_order == NULL) {
+                node->left = NULL;
+                node->right = NULL;
+            }
+            else {
+                node->left = constructTree(node->left, size, size_pre, pre_order, in_order, l, j, 0);
+                node->right = constructTree(node->right, size, size_pre, pre_order, in_order, l, j, 0);
+            }
             return node;
         }
     }
 
-    for (l = j + 1; j < j_b; j++) {
+    for (l = j + 1; l < j_b; l++) {
         if (in_order[l] == (*pre_order)[0]) {
             node = malloc(sizeof(node_t));
             node->value = *pre_order[0];
+            printf("%c\n", node->value);
 
             char *new_pre = malloc(--(*size_pre));
             for (k = 0; k < *size_pre; k++) {
@@ -112,8 +132,14 @@ node_t* constructTree(node_t *node, int size, int *size_pre, char **pre_order, c
             free(*pre_order);
             *pre_order = new_pre;
 
-            node->left = constructTree(node->left, size, size_pre, pre_order, in_order, l, j, 0);
-            node->right = constructTree(node->right, size, size_pre, pre_order, in_order, l, j_b, 0);
+            if (*pre_order == NULL) {
+                node->left = NULL;
+                node->right = NULL;
+            }
+            else {
+                node->left = constructTree(node->left, size, size_pre, pre_order, in_order, l, j, 0);
+                node->right = constructTree(node->right, size, size_pre, pre_order, in_order, l, j_b, 0);
+            }
             return node;
         }
     }
