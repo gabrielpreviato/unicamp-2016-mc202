@@ -8,6 +8,7 @@ typedef struct node {
 
 node_t* constructTree(node_t *node, int size, int *size_pre, char **pre_order, char *in_order,
     int j, int j_b, int root);
+int printTree(node_t *node);
 
 int main() {
     int j = 0;
@@ -27,9 +28,9 @@ int main() {
         }
         else if (c == '\n') {
             if (in_order_size == pre_order_size) {
-                constructTree(tree_root, in_order_size, &pre_order_size, &pre_order_tree, in_order_tree,
+                tree_root = constructTree(tree_root, in_order_size, &pre_order_size, &pre_order_tree, in_order_tree,
                 j, in_order_size + 1, 1);
-                //printTree();
+                printTree(tree_root);
                 //destructTree();
             }
             else {
@@ -118,4 +119,16 @@ node_t* constructTree(node_t *node, int size, int *size_pre, char **pre_order, c
     }
 
     return NULL;
+}
+
+int printTree(node_t *node) {
+    if (node == NULL) {
+    }
+    else {
+        printTree(node->left);
+        printTree(node->right);
+        printf("%c", node->value);
+    }
+
+    return 0;
 }
