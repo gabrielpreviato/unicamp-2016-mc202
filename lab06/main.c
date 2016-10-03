@@ -65,8 +65,9 @@ int main() {
             in_order_tree = realloc(in_order_tree, in_order_size + 1);
             in_order_tree[in_order_size++] = c;
         }
-
     }
+
+    return 0;
 }
 
 node_t* constructTree(node_t *node, int size, int *size_pre, char **pre_order, char *in_order,
@@ -83,7 +84,6 @@ node_t* constructTree(node_t *node, int size, int *size_pre, char **pre_order, c
 
         node = malloc(sizeof(node_t));
         node->value = *pre_order[0];
-        printf("%c\n", node->value);
 
         char *new_pre = malloc(--(*size_pre));
         for (k = 0; k < *size_pre; k++) {
@@ -114,7 +114,6 @@ node_t* constructTree(node_t *node, int size, int *size_pre, char **pre_order, c
         if (in_order[l] == *pre_order[0] && *size_pre != 0) {
             node = malloc(sizeof(node_t));
             node->value = *pre_order[0];
-            printf("%c\n", node->value);
 
             char *new_pre = malloc(--(*size_pre));
             for (k = 0; k < *size_pre; k++) {
@@ -145,7 +144,6 @@ node_t* constructTree(node_t *node, int size, int *size_pre, char **pre_order, c
         if (in_order[l] == (*pre_order)[0] && *size_pre != 0) {
             node = malloc(sizeof(node_t));
             node->value = *pre_order[0];
-            printf("%c\n", node->value);
 
             char *new_pre = malloc(--(*size_pre));
             for (k = 0; k < *size_pre; k++) {
