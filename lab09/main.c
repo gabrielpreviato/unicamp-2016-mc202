@@ -9,19 +9,22 @@ typedef struct node {
 
 node_t *createTree(node_t *node, int c);
 node_t *freeTree(node_t *node);
-int emOrdem(node_t *node);
+double countWeight(node_t *node);
 
 int main(int argc, char const *argv[]) {
     node_t *root = NULL;
 
     char c = 0;
-    scanf("%c", &c);
 
-    root = createTree(root, c);
+    while (scanf("%c", &c) != EOF) {
+        root = createTree(root, c);
 
-    emOrdem(root);
+        printf("%.3lf\n", countWeight(root));
+        
+        freeTree(root);
 
-    freeTree(root);
+        scanf("%c", &c);
+    }
 
     return 0;
 }
@@ -70,14 +73,25 @@ node_t *freeTree(node_t *node) {
     return NULL;
 }
 
-int emOrdem(node_t *node) {
-    if (node == NULL) {
+double countWeight(node_t *node) {
+    if (node->left == node->right) {
+        return 0;
+    }
+    else if (!node->left) {
+        return node->right_p + countWeight(node->right);
+    }
+    else if (!node->right) {
+        return node->left_p + countWeight(node->left);;
     }
     else {
-        emOrdem(node->left);
-        printf("%d ", node->value);
-        emOrdem(node->right);
-    }
+        double l_weight = countWeight(node->left) + node->left_p;
+        double r_weight = countWeight(node->right) + node->right_p;
 
-    return 0;
+        if (l_weight >= r_weight) {
+            return l_weight;
+        }
+        else {
+            return r_weight;
+        }
+    }
 }
