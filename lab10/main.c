@@ -1,7 +1,7 @@
 #include "lab10.h"
 
 int main() {
-    int size, lastHeap = 0;
+    int size;
     scanf("%d", &size);
 
     int *kVector;
@@ -21,13 +21,13 @@ int main() {
         scanf(" %c", &option);
 
         if (option == 'i') {
-            insertHeap(heap, kVector, & lastHeap);
+            insertHeap(heap, kVector, size);
         }
         else if (option == 'm') {
             removeMin(heap, kVector, size);
         }
         else if (option == 'd') {
-
+            decreaseHeap(heap, kVector);
         }
 
     } while (option != 't');
@@ -39,7 +39,7 @@ int main() {
 }
 
 int createHeap(heap_t **heap, int size) {
-    *heap = malloc(sizeof(heap_t)*size);
+    *heap = malloc(sizeof(heap_t)*(size+1)*(size+1));
 
     if (!*heap) {
         printf("Allocation error in createHeap()\n");
@@ -47,14 +47,14 @@ int createHeap(heap_t **heap, int size) {
     }
 
     int i;
-    for (i = 0; i < size; i++) {
+    for (i = 1; i < (size+1)*(size+1); i++) {
         (*heap)[i].key = K_EMPTY;
     }
     return 0;
 }
 
 int createKeyVector(int **kVector, int size) {
-    *kVector = malloc(sizeof(heap_t)*size);
+    *kVector = malloc(sizeof(heap_t)*(size+1)*(size+1));
 
     if (!*kVector) {
         printf("Allocation error in createKeyVector()\n");
@@ -62,7 +62,7 @@ int createKeyVector(int **kVector, int size) {
     }
 
     int i;
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < (size+1)*(size+1); i++) {
         (*kVector)[i] = K_EMPTY;
     }
     return 0;
@@ -79,8 +79,23 @@ int findParent(int position) {
     return position / 2;
 }
 
-int insertHeap(heap_t *heap, int *kVector, int* lastHeap) {
-    int key, value, positionHeap = *lastHeap;
+int findEmptyHeap(heap_t *heap, int size) {
+    int i;
+
+    for (i = 1; i < (size+1)*(size+1); i++) {
+        if (heap[i].key == K_EMPTY) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+int insertHeap(heap_t *heap, int *kVector, int size) {
+    int key, value, positionHeap = findEmptyHeap(heap, size);
+    if (positionHeap == -1) {
+        return 1;
+    }
     scanf("%d %d", &key, &value);
 
     // Check if the key already exists
@@ -93,15 +108,14 @@ int insertHeap(heap_t *heap, int *kVector, int* lastHeap) {
     heap[positionHeap].value = value;
 
     // In case we are adding the first heap element, ends the function
-    if (*lastHeap == 0) {
-        (*lastHeap)++;
+    if (positionHeap == 1) {
         kVector[key] = positionHeap;
         return 0;
     }
 
     // Do a loop for checking if the value added is lesser than his parent
     int parentPosition = findParent(positionHeap);
-    while (value < heap[parentPosition].value && positionHeap != 0) {
+    while (value < heap[parentPosition].value && positionHeap != 1) {
         // Updates the parent element
         heap[positionHeap] = heap[parentPosition];
         kVector[heap[parentPosition].key] = positionHeap;
@@ -114,30 +128,27 @@ int insertHeap(heap_t *heap, int *kVector, int* lastHeap) {
     }
 
     kVector[key] = positionHeap;
-    // Update lastHeap and lastKey
-    (*lastHeap)++;
 
     return 0;
 }
 
 int findChild1(int position) {
-    return 2 * position + 1;
+    return 2 * position;
 }
 
 int findChild2(int position) {
-    return 2 * position + 2;
+    return 2 * position + 1;
 }
 
 int removeMin(heap_t *heap, int *kVector, int size) {
-    if (heap[0].key == K_EMPTY) {
+    if (heap[1].key == K_EMPTY) {
         printf("vazio\n");
         return 1;
     }
-    int child1Position = 1, child2Position = 2, positionHeap = 0,
-        key = heap[0].key, value = heap[0].value;
+    int child1Position = 2, child2Position = 3, positionHeap = 1,
+        key = heap[1].key, value = heap[1].value;
 
     // Loop for putting the root (min value) to a leaf, making the correct changes
-    //while (heap[child1Position].value != K_EMPTY || heap[child2Position].value != K_EMPTY)
     while (1) {
         // In case the min has 2 childs
         if (heap[child1Position].key != K_EMPTY && heap[child2Position].key != K_EMPTY) {
@@ -150,7 +161,7 @@ int removeMin(heap_t *heap, int *kVector, int size) {
                 // Updates old new value
                 positionHeap = child1Position;
                 // In case the left child is out of vector, we reached a leaf
-                if (findChild1(positionHeap) >= size) {
+                if (findChild1(positionHeap) >= size - 1) {
                     break;
                 }
                 child1Position = findChild1(positionHeap);
@@ -165,7 +176,7 @@ int removeMin(heap_t *heap, int *kVector, int size) {
                 // Updates old new value
                 positionHeap = child2Position;
                 // In case the left child is out of vector, we reached a leaf
-                if (findChild1(positionHeap) >= size) {
+                if (findChild1(positionHeap) >= size - 1) {
                     break;
                 }
                 child1Position = findChild1(positionHeap);
@@ -181,15 +192,14 @@ int removeMin(heap_t *heap, int *kVector, int size) {
             // Updates old new value
             positionHeap = child1Position;
             // In case the left child is out of vector, we reached a leaf
-            if (findChild1(positionHeap) >= size) {
+            if (findChild1(positionHeap) >= size - 1) {
                 break;
             }
             child1Position = findChild1(positionHeap);
             child2Position = findChild2(positionHeap);
         }
-        // TODO: Test if above else is really necessary
         // In case the min has only right child
-        else {
+        else if (heap[child2Position].key != K_EMPTY) {
             // Updates new min value
             heap[positionHeap] = heap[child2Position];
             kVector[heap[positionHeap].key] = positionHeap;
@@ -197,11 +207,14 @@ int removeMin(heap_t *heap, int *kVector, int size) {
             // Updates old new value
             positionHeap = child2Position;
             // In case the left child is out of vector, we reached a leaf
-            if (findChild1(positionHeap) >= size) {
+            if (findChild1(positionHeap) >= size - 1) {
                 break;
             }
             child1Position = findChild1(positionHeap);
             child2Position = findChild2(positionHeap);
+        }
+        else {
+            break;
         }
     }
 
@@ -209,16 +222,46 @@ int removeMin(heap_t *heap, int *kVector, int size) {
 
     // Erase kValue of min
     kVector[key] = K_EMPTY;
+    heap[positionHeap].key = K_EMPTY;
 
-    // Shift to the left all heap elements after the removed elements
+    /*// Shift to the left all heap elements after the removed elements
     int i;
     for (i = positionHeap; heap[i].key != -1; i++) {
-        heap[positionHeap] = heap[positionHeap + 1];
-    }
+        heap[i] = heap[i + 1];
+        if (heap[i].key != K_EMPTY) {
+            kVector[heap[i].key] = i;
+        }
+    }*/
 
     return 0;
 }
 
 int decreaseHeap(heap_t *heap, int *kVector) {
-    
+    int key, value;
+    scanf("%d %d", &key, &value);
+
+    int positionHeap = kVector[key];
+    heap[positionHeap].value = value;
+
+    // In case we are changing the first heap element, ends the function
+    if (positionHeap == 1) {
+        return 0;
+    }
+
+    // Do a loop for checking if the value changed is lesser than his parent
+    int parentPosition = findParent(positionHeap);
+    while (value < heap[parentPosition].value && positionHeap != 1) {
+        // Updates the parent element
+        heap[positionHeap] = heap[parentPosition];
+        kVector[heap[parentPosition].key] = positionHeap;
+
+        // Updates the new element
+        positionHeap = parentPosition;
+        heap[positionHeap].value = value;
+        heap[positionHeap].key = key;
+        parentPosition = findParent(positionHeap);
+    }
+
+    kVector[key] = positionHeap;
+    return 0;
 }
